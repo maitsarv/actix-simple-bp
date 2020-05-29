@@ -74,29 +74,44 @@ pub fn get_ip_rate_limiter(store: &Addr<RedisStore>) -> RateLimiter<RedisStoreAc
 }
 
 // WIZ_OPT: use Redis as identity( and session) storage
+use actix_web::cookie::SameSite;
 /// Gets the session service for injection into an Actix app
 pub fn get_session_service() -> RedisSession {
     let time_out = CONFIG.session_timeout as u16;
+    let same_site = get_same_site();
     RedisSession::new(&CONFIG.redis_url, &CONFIG.session_key.as_ref())
         .cookie_name(&CONFIG.session_name)
         .ttl(time_out*60)
         .cookie_secure(CONFIG.session_secure)
+        .cookie_same_site(same_site)
 }
 
-// WIZ_OPT: use cookies as identity storage
 use actix_identity::{CookieIdentityPolicy, IdentityService, IdentityPolicy, RequestIdentity};
 /// Gets the identidy service for injection into an Actix app
 pub fn get_identity_service<T: IdentityPolicy>(policy: T) -> IdentityService<impl IdentityPolicy> {
     IdentityService::new(policy )
 }
 
+// WIZ_OPT: use cookies as identity storage
 pub fn get_cookie_policy() -> CookieIdentityPolicy {
+    let same_site = get_same_site();
     CookieIdentityPolicy::new(&CONFIG.session_key.as_ref())
         .name("id-".to_string() + &CONFIG.session_name)
         .max_age_time(chrono::Duration::minutes(CONFIG.session_timeout))
         .secure(CONFIG.session_secure)
+        .same_site(same_site)
 }
 
+
+fn get_same_site() -> SameSite {
+    let same_site : SameSite;
+    match (&CONFIG.session_samesite.to_uppercase()).as_str() {
+        "STRICT" => same_site = SameSite::Strict,
+        "NONE" => same_site = SameSite::None,
+        _ => same_site = SameSite::Lax,
+    }
+    same_site
+}
 
 fn mask_str(str: &String, mask : &String) -> String{
     let mut strb = str.clone().into_bytes();

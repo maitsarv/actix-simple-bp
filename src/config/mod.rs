@@ -30,6 +30,7 @@ pub struct Config {
     pub session_key: String,
     pub session_name: String,
     pub session_secure: bool,
+    pub session_samesite: String,
     pub session_timeout: i64,
     pub actix_ssl_cert_file: String,
     pub actix_ssl_key_file: String
