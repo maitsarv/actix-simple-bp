@@ -31,8 +31,8 @@ pub struct Config {
     pub session_name: String,
     pub session_secure: bool,
     pub session_timeout: i64,
-    pub ssl_cert_file: String,
-    pub ssl_key_file: String
+    pub actix_ssl_cert_file: String,
+    pub actix_ssl_key_file: String
 }
 
 // Throw the Config struct into a CONFIG lazy_static to avoid multiple processing

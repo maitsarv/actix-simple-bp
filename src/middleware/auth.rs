@@ -58,7 +58,6 @@ where
 
         // WIZ_OPT: backend session check
         let is_logged_in = identity.is_some();
-        log::info!(target: "actix_web","{}  ----- {:?} -req-{:?}","ID" , identity,"");
 
         let unauthorized = !is_logged_in && req.path() != "/api/v1/auth/login";
         if unauthorized {
