@@ -44,23 +44,24 @@ pub async fn login(
     // Remember the token
     id.remember(jwt);
 
-    //Random key cookie session
+    // WIZ_OPT: Random key cookie session
     //TODO: make session optional
     let sess = session.set("user_id", &user.id);
     match sess {
         Ok(_0) => (),
         Err(e) => return Err(ApiError::InternalServerError(String::from("Could not set session var")))
     }
-    log::info!(target: "actix_web","{}  ----- {:?}","LOGIN" , session.get::<Uuid>("user_id").unwrap().unwrap());
     session.renew();
     respond_json(user.into())
 }
 
 /// Logout a user
 /// Forget their user_id
-pub async fn logout(id: Identity) -> Result<HttpResponse, ApiError> {
-    log::info!(target: "actix_web","{}  ----- {:?}","LOGOUT" , id.identity());
-    id.forget();
+pub async fn logout(id: Identity, session: Session) -> Result<HttpResponse, ApiError> {
+    // WIZ_OPT: Random key cookie session
+    session.clear();
+    // WIZ_OPT: JWT identity
+    //id.forget();
     respond_ok()
 }
 

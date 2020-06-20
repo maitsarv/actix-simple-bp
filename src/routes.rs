@@ -23,7 +23,7 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
         .service(
             web::scope("/api/v1")
                 // Lock down routes with AUTH Middleware
-                //.wrap(AuthMiddleware)
+                .wrap(AuthMiddleware)
                 .wrap(get_ip_rate_limiter(&store))
                 // AUTH routes
                 .service(
@@ -40,6 +40,11 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
                         .route("", web::get().to(get_users))
                         .route("", web::post().to(create_user)),
                 ),
+        )
+        .service(
+            web::scope("/api/ext/v1")
+                .wrap(get_ip_rate_limiter(&store))
+                .route("/login", web::post().to(login))
         )
         // Serve secure static files from the static-private folder
         .service(

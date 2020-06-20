@@ -48,7 +48,6 @@ where
     }
 
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        //This is for identity service when identity is stored on client side
         let identity = RequestIdentity::get_identity(&req);
         // WIZ_OPT: jwt check
         /*
