@@ -2,10 +2,10 @@
 
 use crate::auth::{get_session_service, get_identity_service};
 use crate::server_helpers::cache::add_cache;
+use crate::server_helpers::state::new_state;
 use crate::config::CONFIG;
 use crate::database::connection::add_pool;
 use crate::routes::routes;
-use crate::server_helpers::state::new_state;
 use futures::future;
 use actix_cors::Cors;
 use actix_web::web;
