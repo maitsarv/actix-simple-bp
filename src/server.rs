@@ -11,9 +11,10 @@ use actix_cors::Cors;
 use actix_web::web;
 use actix_web::{middleware::Logger, App, HttpServer};
 use listenfd::ListenFd;
-use actix_web_middleware_redirect_https::RedirectHTTPS;
 use crate::config::tls;
 use crate::middleware::redis_identity::RedisSessionPolicy;
+use crate::middleware::redirect_https::RedirectHTTPS;
+use actix_web::http::header;
 
 pub async fn server() -> std::io::Result<()> {
     dotenv::dotenv().ok();
@@ -33,7 +34,7 @@ pub async fn server() -> std::io::Result<()> {
     let mut server = HttpServer::new(move || {
         App::new()
             .configure(add_cache)
-            .wrap(Cors::new().allowed_methods(vec!["GET", "POST"]).supports_credentials().finish())
+            .wrap(Cors::default().allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT]).supports_credentials())
             .wrap(Logger::default())
             .wrap(get_identity_service(RedisSessionPolicy::new()))
             .wrap(get_session_service())

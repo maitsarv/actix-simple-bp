@@ -8,7 +8,7 @@ use diesel::{
     r2d2::PoolError,
     result::{DatabaseErrorKind, Error as DBError},
 };
-use uuid::parser::ParseError;
+use uuid::Error as ParseError;
 
 #[derive(Debug, Display, PartialEq)]
 #[allow(dead_code)]

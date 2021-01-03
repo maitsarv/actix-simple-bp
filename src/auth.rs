@@ -2,7 +2,7 @@ use crate::config::CONFIG;
 use crate::server_helpers::errors::ApiError;
 use actix_redis::RedisSession;
 use argon2rs::argon2i_simple;
-use chrono::{Duration, Utc};
+use time::{Duration, OffsetDateTime};
 use std::time::Duration as TimeDuration;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use uuid::Uuid;
@@ -19,7 +19,7 @@ impl PrivateClaim {
         Self {
             user_id,
             email,
-            exp: (Utc::now() + Duration::hours(CONFIG.jwt_expiration)).timestamp(),
+            exp: (OffsetDateTime::now_utc() + Duration::seconds(CONFIG.jwt_expiration)).unix_timestamp(),
         }
     }
 }
@@ -66,9 +66,7 @@ pub fn get_ip_rate_limiter(store: &Addr<RedisStore>) -> RateLimiter<RedisStoreAc
         .with_identifier(|req| {
             let identity = RequestIdentity::get_identity(req).unwrap_or("".to_string());
             let connection_info = req.connection_info();
-
-            log::info!(target: "actix_web","{}  -----{:?}   {:?}","LIMITER" , identity,connection_info);
-            let remote = connection_info.remote().unwrap_or("");
+            let remote = connection_info.remote_addr().unwrap_or("");
             Ok(identity + remote)
         })
 }
@@ -77,7 +75,7 @@ pub fn get_ip_rate_limiter(store: &Addr<RedisStore>) -> RateLimiter<RedisStoreAc
 use actix_web::cookie::SameSite;
 /// Gets the session service for injection into an Actix app
 pub fn get_session_service() -> RedisSession {
-    let time_out = CONFIG.session_timeout as u16;
+    let time_out = CONFIG.session_timeout as u32;
     let same_site = get_same_site();
     RedisSession::new(&CONFIG.redis_url, &CONFIG.session_key.as_ref())
         .cookie_name(&CONFIG.session_name)
@@ -97,7 +95,7 @@ pub fn get_cookie_policy() -> CookieIdentityPolicy {
     let same_site = get_same_site();
     CookieIdentityPolicy::new(&CONFIG.session_key.as_ref())
         .name("id-".to_string() + &CONFIG.session_name)
-        .max_age_time(chrono::Duration::minutes(CONFIG.session_timeout))
+        .max_age_time(Duration::minutes(CONFIG.session_timeout))
         .secure(CONFIG.session_secure)
         .same_site(same_site)
 }
