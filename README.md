@@ -1,7 +1,7 @@
 # Actix simple boilerplate
 
-An Actix server template.
-Originally based on [Actix 2.0 REST server](https://github.com/ddimaria/rust-actix-example), but has been refactored and is with extra features.
+An Actix 3 server template.
+Originally based on [Actix 2.0 REST server](https://github.com/ddimaria/rust-actix-example), but has been refactored, updated to Actix 3 and is with extra features.
 
 ## Motivation for project
 
@@ -10,7 +10,7 @@ Add some extra security on top of the Actix 2.0 REST server example and build a 
 
 ## Features
 
-- Actix 2.x HTTP Server
+- Actix 3.x HTTP Server
 - Multi-Database Support (MySQL)
 - JWT Support
 - Async Caching Layer with a Simple API
@@ -57,7 +57,6 @@ Add some extra security on top of the Actix 2.0 REST server example and build a 
 - `rayon`: Parallelize
 - `r2d2`: Database Connection Pooling
 - `validator`: Validates incoming Json
-- `actix-web-middleware-redirect-https`: Redirect http to https
 - `rand`: Generate random salt string
 
 ## Installation
